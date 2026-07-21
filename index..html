@@ -73,6 +73,34 @@
       font-size: 0.98rem;
     }
 
+    .desktop-controls {
+      display: none;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 7px;
+    }
+
+    .text-control {
+      appearance: none;
+      min-height: 30px;
+      border: 1px solid #b8cec7;
+      border-radius: 4px;
+      padding: 4px 10px;
+      color: var(--accent-strong);
+      background: rgba(255, 255, 255, 0.88);
+      font-size: 0.86rem;
+      font-style: normal;
+      font-weight: 680;
+      cursor: pointer;
+    }
+
+    .text-control:hover,
+    .text-control:focus-visible {
+      color: #ffffff;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
     .controls {
       display: flex;
       flex-wrap: wrap;
@@ -135,18 +163,18 @@
       align-items: stretch;
       justify-items: center;
       min-height: 0;
-      gap: 8px;
+      gap: 2px;
       padding: clamp(10px, 1.8vw, 18px);
     }
 
     .map-display {
       width: min(100%, 760px);
-      min-height: 30px;
+      min-height: 24px;
       display: flex;
-      align-items: baseline;
+      align-items: center;
       justify-content: flex-start;
       gap: 8px;
-      padding: 2px 8px;
+      padding: 0 8px;
       color: var(--accent-strong);
       line-height: 1.2;
     }
@@ -173,7 +201,7 @@
       max-width: 100%;
       height: min(760px, calc(100vh - 160px));
       min-height: 540px;
-      aspect-ratio: 760 / 920;
+      aspect-ratio: 760 / 880;
       display: block;
       border-radius: 6px;
       background: #fbfcf9;
@@ -186,14 +214,47 @@
       stroke-width: 1.45;
       vector-effect: non-scaling-stroke;
       cursor: pointer;
+      outline: none !important;
       transition: fill 150ms ease, filter 150ms ease;
     }
 
+    .county-group {
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    .county-group.is-flipping-once {
+      animation: county-single-flip 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .county-group.is-flipping-twice {
+      animation: county-double-flip 560ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes county-single-flip {
+      0%, 100% { transform: scaleX(1); }
+      50% { transform: scaleX(0.06); }
+    }
+
+    @keyframes county-double-flip {
+      0%, 100% { transform: scaleX(1); }
+      25%, 75% { transform: scaleX(0.06); }
+      50% { transform: scaleX(1); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .county-group.is-flipping-once,
+      .county-group.is-flipping-twice {
+        animation: none;
+      }
+    }
+
     .county:hover,
+    .county:focus,
     .county:focus-visible {
       fill: var(--county-hover);
       filter: brightness(0.99);
-      outline: none;
+      outline: none !important;
     }
 
     .county[data-state="1"] {
@@ -239,6 +300,15 @@
 
     .county-label.is-seat {
       fill: #3f241c;
+    }
+
+    .map-hint {
+      fill: var(--accent-strong);
+      font-size: 16px;
+      font-style: italic;
+      font-weight: 720;
+      text-anchor: start;
+      pointer-events: none;
     }
 
     .info-panel {
@@ -361,10 +431,38 @@
         position: static;
       }
 
+      .desktop-controls {
+        display: none;
+      }
+
       .map-frame {
         width: min(100%, 520px);
         height: auto;
         min-height: 0;
+      }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .desktop-controls {
+        display: flex;
+      }
+
+      .mobile-controls {
+        display: none;
+      }
+
+      .map-shell {
+        justify-items: start;
+      }
+
+      .topbar > div:first-child {
+        padding-left: clamp(10px, 1.8vw, 18px);
+      }
+
+      .county-label {
+        stroke: rgba(255, 255, 255, 0.96);
+        stroke-width: 5px;
+        font-weight: 820;
       }
     }
 
@@ -399,11 +497,14 @@
     <header class="topbar">
       <div>
         <h1>Utah Counties</h1>
-        <p class="subtitle">County seats practice</p>
+        <div class="desktop-controls" aria-label="Map controls">
+          <button class="text-control reset-control" type="button">Reset</button>
+          <button class="text-control show-all-control" type="button">Show all</button>
+        </div>
       </div>
-      <div class="controls" aria-label="Map controls">
-        <button class="btn secondary" id="resetBtn" type="button">Reset</button>
-        <button class="btn" id="showAllBtn" type="button">Show all</button>
+      <div class="controls mobile-controls" aria-label="Map controls">
+        <button class="btn secondary reset-control" type="button">Reset</button>
+        <button class="btn show-all-control" type="button">Show all</button>
       </div>
     </header>
 
@@ -411,30 +512,29 @@
       <section class="map-shell" aria-label="Utah county map">
         <div class="map-display map-display-top" aria-live="polite">
           <span class="map-display-label">County</span>
-          <strong class="map-display-value" id="mapCountyValue">Blank</strong>
+          <strong class="map-display-value" id="mapCountyValue"></strong>
         </div>
-        <svg class="map-frame" id="utahMap" viewBox="0 0 760 920" role="img" aria-label="Blank clickable map of Utah counties"></svg>
+        <svg class="map-frame" id="utahMap" viewBox="0 20 760 880" role="img" aria-label="Blank clickable map of Utah counties"></svg>
         <div class="map-display map-display-bottom" aria-live="polite">
           <span class="map-display-label">County Seat</span>
-          <strong class="map-display-value" id="mapSeatValue">Blank</strong>
+          <strong class="map-display-value" id="mapSeatValue"></strong>
         </div>
       </section>
 
       <aside class="info-panel" aria-live="polite">
-        <h2 class="panel-title">Selection</h2>
         <dl class="selection">
           <div>
             <dt>County</dt>
-            <dd id="countyValue">Blank</dd>
+            <dd id="countyValue"></dd>
           </div>
           <div>
             <dt>Seat</dt>
-            <dd id="seatValue">Blank</dd>
+            <dd id="seatValue"></dd>
           </div>
         </dl>
         <div class="mode-display">
           <span class="mode-label">Displaying:</span>
-          <span class="mode-pill" id="modeValue">Blank map</span>
+          <span class="mode-pill" id="modeValue">Nothing selected</span>
         </div>
         <div class="all-list" id="allList" hidden>
           <ol id="allListItems"></ol>
@@ -448,8 +548,8 @@
   <script>
     const data = JSON.parse(document.getElementById("mapData").textContent);
     const svg = document.getElementById("utahMap");
-    const resetBtn = document.getElementById("resetBtn");
-    const showAllBtn = document.getElementById("showAllBtn");
+    const resetControls = document.querySelectorAll(".reset-control");
+    const showAllControls = document.querySelectorAll(".show-all-control");
     const countyValue = document.getElementById("countyValue");
     const seatValue = document.getElementById("seatValue");
     const mapCountyValue = document.getElementById("mapCountyValue");
@@ -466,6 +566,10 @@
     let allVisible = false;
     let activeCountyId = null;
 
+    function isDesktopDevice() {
+      return window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    }
+
     function alignMapDisplays() {
       const mapRect = svg.getBoundingClientRect();
       const mapWidth = mapRect.width;
@@ -473,7 +577,7 @@
         display.style.width = `${mapWidth}px`;
       });
 
-      if (window.innerWidth > 900) {
+      if (isDesktopDevice()) {
         const appRect = app.getBoundingClientRect();
         topbar.style.width = `${mapRect.right - appRect.left}px`;
       } else {
@@ -493,6 +597,7 @@
         const path = createSvgElement("path");
         const text = createSvgElement("text");
 
+        group.setAttribute("class", "county-group");
         path.setAttribute("d", county.path);
         path.setAttribute("class", "county");
         path.setAttribute("tabindex", "0");
@@ -516,8 +621,22 @@
 
         group.append(path, text);
         fragment.append(group);
-        countyNodes.set(county.id, { path, text });
+        countyNodes.set(county.id, { group, path, text });
       });
+
+      const mapHint = createSvgElement("text");
+      mapHint.setAttribute("class", "map-hint");
+      mapHint.setAttribute("x", "470");
+      mapHint.setAttribute("y", "102");
+      const countyHint = createSvgElement("tspan");
+      countyHint.setAttribute("x", "470");
+      countyHint.textContent = "Tap once for county";
+      const seatHint = createSvgElement("tspan");
+      seatHint.setAttribute("x", "470");
+      seatHint.setAttribute("dy", "1.45em");
+      seatHint.textContent = "Tap again for the county seat";
+      mapHint.append(countyHint, seatHint);
+      fragment.append(mapHint);
 
       svg.replaceChildren(fragment);
       render();
@@ -535,6 +654,26 @@
 
       activeCountyId = countyId;
       render();
+      animateCounty(countyId);
+    }
+
+    function animateCounty(countyId) {
+      const group = countyNodes.get(countyId).group;
+      const animationChoice = Math.random();
+      const animationClass = animationChoice < 0.1
+        ? "is-flipping-twice"
+        : animationChoice < 0.35
+          ? "is-flipping-once"
+          : null;
+
+      group.classList.remove("is-flipping-once", "is-flipping-twice");
+      if (!animationClass) return;
+
+      group.getBoundingClientRect();
+      group.classList.add(animationClass);
+      group.addEventListener("animationend", () => {
+        group.classList.remove("is-flipping-once", "is-flipping-twice");
+      }, { once: true });
     }
 
     function resetStates() {
@@ -547,7 +686,10 @@
       textNode.classList.toggle("is-seat", state === 2 && !allVisible);
 
       const baseSize = Number(county.label.size);
-      const fontSize = allVisible ? Math.min(baseSize, 12) : baseSize;
+      const desktopAllSize = Math.min(Math.max(baseSize, 12.5), 14);
+      const fontSize = allVisible
+        ? isDesktopDevice() ? desktopAllSize : Math.min(baseSize, 12)
+        : baseSize;
       textNode.style.fontSize = fontSize + "px";
 
       let lines = [];
@@ -607,11 +749,11 @@
       } else if (activeCounty && activeState > 0) {
         setSelectionText(
           activeCounty.name,
-          activeState === 2 ? activeCounty.seat : "Blank",
+          activeState === 2 ? activeCounty.seat : "",
           activeState === 1 ? "County name" : "County seat",
         );
       } else {
-        setSelectionText("Blank", "Blank", "Blank map");
+        setSelectionText("", "", "Nothing selected");
       }
 
       allList.hidden = !allVisible;
@@ -636,17 +778,21 @@
       renderPanel();
     }
 
-    resetBtn.addEventListener("click", () => {
-      allVisible = false;
-      activeCountyId = null;
-      resetStates();
-      render();
+    resetControls.forEach((control) => {
+      control.addEventListener("click", () => {
+        allVisible = false;
+        activeCountyId = null;
+        resetStates();
+        render();
+      });
     });
 
-    showAllBtn.addEventListener("click", () => {
-      allVisible = true;
-      activeCountyId = null;
-      render();
+    showAllControls.forEach((control) => {
+      control.addEventListener("click", () => {
+        allVisible = true;
+        activeCountyId = null;
+        render();
+      });
     });
 
     renderAllList();
