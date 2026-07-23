@@ -423,6 +423,8 @@
 
     .map-shell {
       gap: 2px;
+      grid-template-rows: auto auto auto;
+      align-content: start;
       padding-top: 8px;
       padding-bottom: 8px;
     }
@@ -436,21 +438,19 @@
 
     .map-instructions {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-start;
       width: 100%;
-      gap: 18px;
+      box-sizing: border-box;
+      padding-left: 3.95%;
       color: #265c54;
       font-size: .9rem;
       font-weight: 700;
       font-style: italic;
     }
 
-    .map-instructions span:last-child {
-      text-align: right;
-    }
-
     .map-frame {
       aspect-ratio: 760 / 880;
+      align-self: start;
     }
 
     .county:focus,
@@ -482,6 +482,12 @@
       font-weight: 800;
     }
 
+    .map-notch-label,
+    .map-notch-value {
+      pointer-events: none;
+      text-anchor: start;
+    }
+
     .mode-display {
       display: flex;
       flex-wrap: wrap;
@@ -504,7 +510,8 @@
       width: min(100%, 760px);
       min-height: 28px;
       margin-top: 0;
-      padding: 2px 0 0;
+      box-sizing: border-box;
+      padding: 2px 0 0 3.95%;
     }
 
     .displaying-status,
@@ -546,6 +553,77 @@
       color: var(--muted);
       font-size: .76rem;
       text-align: center;
+    }
+
+    .county-chronology {
+      margin-top: 18px;
+      padding: clamp(16px, 2.5vw, 26px);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .86);
+      box-shadow: var(--shadow);
+    }
+
+    .county-chronology h2,
+    .county-chronology h3 {
+      margin: 0;
+      color: var(--ink);
+    }
+
+    .county-chronology h2 {
+      font-size: 1.2rem;
+    }
+
+    .county-chronology h3 {
+      margin-top: 22px;
+      font-size: 1rem;
+    }
+
+    .chronology-intro,
+    .chronology-note {
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.45;
+    }
+
+    .chronology-intro {
+      margin: 6px 0 14px;
+    }
+
+    .county-history-list,
+    .former-county-list {
+      margin: 0;
+      padding-left: 1.35rem;
+    }
+
+    .county-history-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 28px;
+    }
+
+    .county-history-list li,
+    .former-county-list li {
+      padding: 7px 0;
+      border-bottom: 1px solid #e7ece8;
+      font-size: .82rem;
+      line-height: 1.38;
+    }
+
+    .county-history-list time {
+      color: var(--accent-strong);
+      font-weight: 780;
+    }
+
+    .county-origin {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: .75rem;
+    }
+
+    .chronology-note {
+      margin: 12px 0 0;
     }
 
     .site-footer a {
@@ -605,6 +683,14 @@
       .mobile-controls .btn { flex: 1 1 130px; }
       .county-label { font-weight: 820; }
       .map-hint { font-size: 17px; }
+      .map-notch-label { font-size: 15px; }
+      .map-notch-value { font-size: 24px; }
+    }
+
+    @media (max-width: 700px) {
+      .county-history-list {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -628,8 +714,7 @@
       <section class="map-shell" aria-label="Utah county map">
         <div class="map-display map-display-top" aria-live="polite">
           <div class="map-instructions">
-            <span>Tap once for county</span>
-            <span>Tap again for the county seat</span>
+            <span>Tap once for county, tap again for the county seat</span>
           </div>
         </div>
         <svg class="map-frame" id="utahMap" viewBox="0 20 760 880" role="img" aria-label="Blank clickable map of Utah counties"></svg>
@@ -674,6 +759,159 @@
       </aside>
     </main>
 
+    <section class="county-chronology" aria-labelledby="countyChronologyTitle">
+      <h2 id="countyChronologyTitle">Counties at Utah Statehood (January 4, 1896)</h2>
+      <p class="statehood-counties">
+        Utah entered the Union with 27 counties: Beaver, Box Elder, Cache, Carbon,
+        Davis, Emery, Garfield, Grand, Iron, Juab, Kane, Millard, Morgan, Piute,
+        Rich, Salt Lake, San Juan, Sanpete, Sevier, Summit, Tooele, Uintah, Utah,
+        Wasatch, Washington, Wayne, and Weber.
+      </p>
+
+      <h2>Former Utah Territory Counties</h2>
+      <ul class="former-county-list">
+        <li><strong>Desert County</strong> — March 3, 1852–January 17, 1862; its territory became parts of Box Elder and Tooele counties and Nevada.</li>
+        <li><strong>Green River County</strong> — March 3, 1852–February 16, 1872; its former territory is now divided among several Utah counties, Wyoming, and Colorado.</li>
+        <li><strong>Carson County</strong> — January 17, 1854–March 2, 1861; became part of Nevada.</li>
+        <li><strong>Cedar County</strong> — January 5, 1856–January 17, 1862; became part of Utah County.</li>
+        <li><strong>Greasewood County</strong> — January 5, 1856–January 17, 1862; became part of Box Elder County.</li>
+        <li><strong>Humboldt County</strong> — January 5, 1856–March 2, 1861; became part of Nevada.</li>
+        <li><strong>Malad County</strong> — January 5, 1856–January 17, 1862; became part of Box Elder County.</li>
+        <li><strong>St. Mary&rsquo;s County</strong> — January 5, 1856–January 17, 1862; became part of Nevada.</li>
+        <li><strong>Shambip County</strong> — January 12, 1856–January 17, 1862; became part of Tooele County.</li>
+        <li><strong>Rio Virgen County</strong> — February 18, 1869–February 16, 1872; its territory became parts of Washington County, Nevada, and Arizona.</li>
+      </ul>
+
+      <h2>Utah County Creation Dates</h2>
+      <p class="chronology-intro">
+        Dates show when each present-day county was created or became effective. Historical parent counties and former names are included.
+      </p>
+      <ol class="county-history-list">
+        <li>
+          <time datetime="1850-01-31">January 31, 1850</time> — Iron County
+          <span class="county-origin">An original State of Deseret county.</span>
+        </li>
+        <li>
+          <time datetime="1850-01-31">January 31, 1850</time> — Salt Lake County
+          <span class="county-origin">Created as Great Salt Lake County; renamed Salt Lake County on January 29, 1868.</span>
+        </li>
+        <li>
+          <time datetime="1850-01-31">January 31, 1850</time> — Sanpete County
+          <span class="county-origin">An original State of Deseret county.</span>
+        </li>
+        <li>
+          <time datetime="1850-01-31">January 31, 1850</time> — Tooele County
+          <span class="county-origin">Created as Tuilla County; re-created as Tooele County on March 3, 1852.</span>
+        </li>
+        <li>
+          <time datetime="1850-01-31">January 31, 1850</time> — Utah County
+          <span class="county-origin">An original State of Deseret county.</span>
+        </li>
+        <li>
+          <time datetime="1850-01-31">January 31, 1850</time> — Weber County
+          <span class="county-origin">An original State of Deseret county.</span>
+        </li>
+        <li>
+          <time datetime="1850-10-05">October 5, 1850</time> — Davis County
+          <span class="county-origin">Formed from parts of Great Salt Lake and Weber counties.</span>
+        </li>
+        <li>
+          <time datetime="1851-10-04">October 4, 1851</time> — Millard County
+          <span class="county-origin">An original Utah Territory county.</span>
+        </li>
+        <li>
+          <time datetime="1852-03-03">March 3, 1852</time> — Juab County
+          <span class="county-origin">Created by Utah Territory’s first legislature.</span>
+        </li>
+        <li>
+          <time datetime="1852-03-03">March 3, 1852</time> — Washington County
+          <span class="county-origin">Created by Utah Territory’s first legislature.</span>
+        </li>
+        <li>
+          <time datetime="1854-01-13">January 13, 1854</time> — Summit County
+          <span class="county-origin">Formed from Great Salt Lake and the former Green River County.</span>
+        </li>
+        <li>
+          <time datetime="1856-01-05">January 5, 1856</time> — Beaver County
+          <span class="county-origin">Formed from Iron County.</span>
+        </li>
+        <li>
+          <time datetime="1856-01-05">January 5, 1856</time> — Box Elder County
+          <span class="county-origin">Formed from Weber County; later received land from former Greasewood and Malad counties.</span>
+        </li>
+        <li>
+          <time datetime="1857-01-05">January 5, 1857</time> — Cache County
+          <span class="county-origin">Formed from Weber County.</span>
+        </li>
+        <li>
+          <time datetime="1862-01-17">January 17, 1862</time> — Morgan County
+          <span class="county-origin">Formed from Davis, Great Salt Lake, Summit, and Weber counties.</span>
+        </li>
+        <li>
+          <time datetime="1862-01-17">January 17, 1862</time> — Wasatch County
+          <span class="county-origin">Formed from Great Salt Lake, Green River, Sanpete, Summit, and Utah counties.</span>
+        </li>
+        <li>
+          <time datetime="1864-01-16">January 16, 1864</time> — Kane County
+          <span class="county-origin">Formed from Washington County.</span>
+        </li>
+        <li>
+          <time datetime="1864-01-16">January 16, 1864</time> — Rich County
+          <span class="county-origin">Formed from Cache County as Richland County; renamed Rich County on January 29, 1868.</span>
+        </li>
+        <li>
+          <time datetime="1865-01-16">January 16, 1865</time> — Piute County
+          <span class="county-origin">Formed from Beaver County.</span>
+        </li>
+        <li>
+          <time datetime="1865-01-16">January 16, 1865</time> — Sevier County
+          <span class="county-origin">Formed from Sanpete County.</span>
+        </li>
+        <li>
+          <time datetime="1880-02-12">February 12, 1880</time> — Emery County
+          <span class="county-origin">Formed from Sanpete County.</span>
+        </li>
+        <li>
+          <time datetime="1880-02-17">February 17, 1880</time> — San Juan County
+          <span class="county-origin">Formed from parts of Kane, Iron, and Piute counties.</span>
+        </li>
+        <li>
+          <time datetime="1880-02-18">February 18, 1880</time> — Uintah County
+          <span class="county-origin">Formed from Sanpete, Summit, and Wasatch counties.</span>
+        </li>
+        <li>
+          <time datetime="1882-03-09">March 9, 1882</time> — Garfield County
+          <span class="county-origin">Formed from Iron County.</span>
+        </li>
+        <li>
+          <time datetime="1890-03-13">March 13, 1890</time> — Grand County
+          <span class="county-origin">Formed from Emery County.</span>
+        </li>
+        <li>
+          <time datetime="1892-03-10">March 10, 1892</time> — Wayne County
+          <span class="county-origin">Formed from Piute County.</span>
+        </li>
+        <li>
+          <time datetime="1894-03-08">March 8, 1894</time> — Carbon County
+          <span class="county-origin">Formed from Emery County.</span>
+        </li>
+        <li>
+          <time datetime="1915-01-04">January 4, 1915</time> — Duchesne County
+          <span class="county-origin">Authorized in 1914 from part of Wasatch County and effective in 1915.</span>
+        </li>
+        <li>
+          <time datetime="1918-01-07">January 7, 1918</time> — Daggett County
+          <span class="county-origin">Approved in 1917 from parts of Uintah and Summit counties and effective in 1918.</span>
+        </li>
+      </ol>
+
+      <p class="chronology-note">
+        Creation and relationship dates follow the
+        <a href="https://archives.utah.gov/research/guides/county-formation/" target="_blank" rel="noreferrer">Utah Division of Archives and Records Service county-formation history</a>.
+        A county’s organization or effective date can differ from its authorizing legislation.
+      </p>
+    </section>
+
     <footer class="site-footer">
       <p class="footer-link">
         <a href="https://ilovehistory.utah.gov/our-counties/" target="_blank" rel="noreferrer">
@@ -705,7 +943,7 @@
       daggettCounty.label.allVisibleYOffset = -5;
     }
     const summitCounty = data.counties.find((county) => county.name === "Summit");
-    if (summitCounty) summitCounty.label.x -= 6;
+    if (summitCounty) summitCounty.label.x -= 12;
     const garfieldCounty = data.counties.find((county) => county.name === "Garfield");
     if (garfieldCounty) garfieldCounty.label.x -= 6;
     const wasatchCounty = data.counties.find((county) => county.name === "Wasatch");
@@ -796,30 +1034,30 @@
         countyNodes.set(county.id, { path, text });
       });
 
-      const countyReadout = createSvgElement("text");
-      countyReadout.setAttribute("class", "map-notch-readout");
-      countyReadout.setAttribute("x", "472");
-      countyReadout.setAttribute("y", "125");
-      const countyReadoutLabel = createSvgElement("tspan");
+      const mobileNotch = !isDesktopDevice();
+      const countyReadoutLabel = createSvgElement("text");
       countyReadoutLabel.setAttribute("class", "map-notch-label");
+      countyReadoutLabel.setAttribute("x", "472");
+      countyReadoutLabel.setAttribute("y", mobileNotch ? "92" : "125");
       countyReadoutLabel.textContent = "COUNTY";
-      mapCountyValue = createSvgElement("tspan");
-      mapCountyValue.setAttribute("class", "map-notch-value");
-      mapCountyValue.setAttribute("dx", "10");
-      countyReadout.append(countyReadoutLabel, mapCountyValue);
 
-      const seatReadout = createSvgElement("text");
-      seatReadout.setAttribute("class", "map-notch-readout");
-      seatReadout.setAttribute("x", "472");
-      seatReadout.setAttribute("y", "158");
-      const seatReadoutLabel = createSvgElement("tspan");
+      mapCountyValue = createSvgElement("text");
+      mapCountyValue.setAttribute("class", "map-notch-value");
+      mapCountyValue.setAttribute("x", mobileNotch ? "472" : "535");
+      mapCountyValue.setAttribute("y", mobileNotch ? "122" : "125");
+
+      const seatReadoutLabel = createSvgElement("text");
       seatReadoutLabel.setAttribute("class", "map-notch-label");
+      seatReadoutLabel.setAttribute("x", "472");
+      seatReadoutLabel.setAttribute("y", mobileNotch ? "148" : "158");
       seatReadoutLabel.textContent = "COUNTY SEAT";
-      mapSeatValue = createSvgElement("tspan");
+
+      mapSeatValue = createSvgElement("text");
       mapSeatValue.setAttribute("class", "map-notch-value");
-      mapSeatValue.setAttribute("dx", "10");
-      seatReadout.append(seatReadoutLabel, mapSeatValue);
-      fragment.append(countyReadout, seatReadout);
+      mapSeatValue.setAttribute("x", mobileNotch ? "472" : "575");
+      mapSeatValue.setAttribute("y", mobileNotch ? "181" : "158");
+
+      fragment.append(countyReadoutLabel, mapCountyValue, seatReadoutLabel, mapSeatValue);
 
       svg.replaceChildren(fragment);
       render();
