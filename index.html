@@ -853,6 +853,12 @@
       .map-notch-value { font-size: 24px; }
     }
 
+    @media (max-width: 620px) and (hover: none),
+           (max-width: 620px) and (pointer: coarse) {
+      .map-notch-label { font-size: 17px; }
+      .map-notch-value { font-size: 27px; }
+    }
+
     @media (max-width: 700px) {
       .county-history-list {
         grid-template-columns: 1fr;
@@ -1292,27 +1298,28 @@
       });
 
       const mobileNotch = !isDesktopDevice();
+      const phoneNotch = mobileNotch && window.matchMedia("(max-width: 620px)").matches;
       const countyReadoutLabel = createSvgElement("text");
       countyReadoutLabel.setAttribute("class", "map-notch-label");
       countyReadoutLabel.setAttribute("x", "472");
-      countyReadoutLabel.setAttribute("y", mobileNotch ? "92" : "125");
+      countyReadoutLabel.setAttribute("y", phoneNotch ? "90" : mobileNotch ? "92" : "125");
       countyReadoutLabel.textContent = "COUNTY";
 
       mapCountyValue = createSvgElement("text");
       mapCountyValue.setAttribute("class", "map-notch-value");
       mapCountyValue.setAttribute("x", mobileNotch ? "472" : "535");
-      mapCountyValue.setAttribute("y", mobileNotch ? "122" : "125");
+      mapCountyValue.setAttribute("y", phoneNotch ? "124" : mobileNotch ? "122" : "125");
 
       const seatReadoutLabel = createSvgElement("text");
       seatReadoutLabel.setAttribute("class", "map-notch-label");
       seatReadoutLabel.setAttribute("x", "472");
-      seatReadoutLabel.setAttribute("y", mobileNotch ? "148" : "158");
+      seatReadoutLabel.setAttribute("y", phoneNotch ? "160" : mobileNotch ? "148" : "158");
       seatReadoutLabel.textContent = "COUNTY SEAT";
 
       mapSeatValue = createSvgElement("text");
       mapSeatValue.setAttribute("class", "map-notch-value");
       mapSeatValue.setAttribute("x", mobileNotch ? "472" : "575");
-      mapSeatValue.setAttribute("y", mobileNotch ? "181" : "158");
+      mapSeatValue.setAttribute("y", phoneNotch ? "196" : mobileNotch ? "181" : "158");
 
       fragment.append(countyReadoutLabel, mapCountyValue, seatReadoutLabel, mapSeatValue);
 
