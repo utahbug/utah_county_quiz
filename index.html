@@ -484,8 +484,11 @@
     .county:focus-visible { outline: none; }
 
     .county-label {
-      stroke: none;
-      paint-order: normal;
+      stroke: rgba(255, 253, 242, 0.98);
+      stroke-width: 2.4px;
+      paint-order: stroke fill;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
     }
 
     .county-label.is-left-aligned { text-anchor: start; }
@@ -902,7 +905,23 @@
       .topbar { flex-direction: column; align-items: stretch; }
       .mobile-controls { justify-content: stretch; }
       .mobile-controls .btn { flex: 1 1 130px; }
-      .county-label { font-weight: 820; }
+      .county {
+        filter:
+          brightness(1.1)
+          saturate(.76)
+          contrast(.88)
+          drop-shadow(0 0 1.15px rgba(255, 253, 242, 0.98));
+      }
+      .county-label {
+        fill: #101816;
+        stroke: rgba(255, 253, 242, 1);
+        stroke-width: 3.2px;
+        font-weight: 880;
+      }
+      .county-label .seat-line {
+        fill: #202926;
+        font-weight: 790;
+      }
       .map-hint { font-size: 17px; }
       .map-notch-label { font-size: 15px; }
       .map-notch-value { font-size: 24px; }
@@ -1481,8 +1500,8 @@
 
       const baseSize = Number(county.label.size);
       const desktopAllSize = Math.min(Math.max(baseSize, 12.5), 14);
-      const mobileAllSize = Math.min(Math.max(baseSize, 12), 13);
-      const mobileRevealSize = Math.min(baseSize * 1.35, 19);
+      const mobileAllSize = Math.min(Math.max(baseSize * 1.45, 17), 19);
+      const mobileRevealSize = Math.min(Math.max(baseSize * 1.65, 18), 22);
       const fontSize = isDesktopDevice()
         ? allVisible ? desktopAllSize : baseSize
         : allVisible ? mobileAllSize : mobileRevealSize;
