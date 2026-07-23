@@ -659,22 +659,50 @@
       gap: 0 28px;
     }
 
-    .county-order-control {
-      margin: 0 0 10px;
-      padding: 0;
-      border: 0;
-      color: var(--accent-strong);
-      background: transparent;
+    .county-history-list.is-masonry {
+      position: relative;
+      display: block;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .county-history-list.is-masonry > li {
+      position: absolute;
+      margin: 0;
+    }
+
+    .county-sort-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: 8px 14px;
+      margin: 8px 0 12px;
+    }
+
+    .county-sort-controls label {
+      display: grid;
+      gap: 3px;
+      color: var(--muted);
+      font-size: .72rem;
+      font-weight: 720;
+    }
+
+    .county-sort-controls select {
+      min-width: 170px;
+      padding: 7px 30px 7px 9px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--ink);
+      background-color: rgba(255, 255, 255, .9);
       font: inherit;
-      font-size: .78rem;
-      text-decoration: underline;
-      text-underline-offset: 2px;
+      font-size: .8rem;
+      font-weight: 600;
       cursor: pointer;
     }
 
-    .county-order-control:hover,
-    .county-order-control:focus-visible {
-      color: var(--ink);
+    .county-sort-controls select:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
     }
 
     .county-history-list li,
@@ -864,6 +892,25 @@
         grid-template-columns: 1fr;
       }
 
+      .county-history-list.is-masonry {
+        height: auto !important;
+      }
+
+      .county-history-list.is-masonry > li {
+        position: static;
+        width: auto !important;
+        margin-bottom: 10px;
+      }
+
+      .county-sort-controls {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .county-sort-controls select {
+        width: 100%;
+      }
+
       .county-detail-grid {
         grid-template-columns: 1fr;
       }
@@ -991,10 +1038,25 @@
         <li>Weber</li>
       </ul>
 
-      <h2 class="creation-dates-title">Utah County Creation Dates</h2>
-      <button class="county-order-control" id="countyOrderToggle" type="button">
-        View counties alphabetically
-      </button>
+      <h2 class="creation-dates-title">Utah Counties</h2>
+      <div class="county-sort-controls" aria-label="County sorting options">
+        <label for="countySortBy">
+          Sort by
+          <select id="countySortBy">
+            <option value="creation">Creation date</option>
+            <option value="name">County name</option>
+            <option value="area">Land area</option>
+            <option value="population">Population (2024 estimate)</option>
+          </select>
+        </label>
+        <label for="countySortDirection">
+          Order
+          <select id="countySortDirection">
+            <option value="asc">Oldest first</option>
+            <option value="desc">Newest first</option>
+          </select>
+        </label>
+      </div>
       <ol class="county-history-list">
         <li>
           <time datetime="1850-01-31">January 31, 1850</time> — Iron County
@@ -1130,7 +1192,7 @@
         <a href="https://ilovehistory.utah.gov/our-counties/" target="_blank" rel="noopener noreferrer">
           Learn more about Utah counties ↗
         </a>
-        (Outside resource from Utah.gov)
+        Outside resource from Utah.gov
       </p>
     </section>
 
@@ -1458,11 +1520,45 @@
     function enhanceCountyHistory() {
       const historyItems = document.querySelectorAll(".county-history-list > li");
       const historyList = document.querySelector(".county-history-list");
-      const orderToggle = document.getElementById("countyOrderToggle");
+      const sortBy = document.getElementById("countySortBy");
+      const sortDirection = document.getElementById("countySortDirection");
       const chronologicalItems = [...historyItems];
       const numberFormatter = new Intl.NumberFormat("en-US");
       let openButton = null;
-      let alphabetical = false;
+      let layoutFrame = 0;
+
+      historyList.classList.add("is-masonry");
+
+      function layoutCountyCards() {
+        cancelAnimationFrame(layoutFrame);
+        layoutFrame = requestAnimationFrame(() => {
+          const items = [...historyList.children];
+          if (window.matchMedia("(max-width: 700px)").matches) {
+            items.forEach((item) => {
+              item.style.removeProperty("left");
+              item.style.removeProperty("top");
+              item.style.removeProperty("width");
+            });
+            historyList.style.removeProperty("height");
+            return;
+          }
+
+          const columnGap = 28;
+          const rowGap = 10;
+          const columnWidth = (historyList.clientWidth - columnGap) / 2;
+          const columnHeights = [0, 0];
+
+          items.forEach((item, index) => {
+            const column = index % 2;
+            item.style.width = `${columnWidth}px`;
+            item.style.left = `${column * (columnWidth + columnGap)}px`;
+            item.style.top = `${columnHeights[column]}px`;
+            columnHeights[column] += item.offsetHeight + rowGap;
+          });
+
+          historyList.style.height = `${Math.max(...columnHeights) - rowGap}px`;
+        });
+      }
 
       historyItems.forEach((item, index) => {
         const match = item.textContent.match(/—\s+(.+?) County/);
@@ -1473,6 +1569,9 @@
         const county = data.counties.find((entry) => entry.name === countyName);
         if (!facts || !county) return;
         item.dataset.countyName = countyName;
+        item.dataset.creationDate = item.querySelector("time")?.dateTime || "";
+        item.dataset.area = String(facts.area);
+        item.dataset.population = String(facts.population2024);
         const palette = countyCardPalette[data.counties.indexOf(county) % countyCardPalette.length];
         item.style.setProperty("--card-tint", palette.tint);
         item.style.setProperty("--card-accent", palette.accent);
@@ -1522,22 +1621,58 @@
           button.setAttribute("aria-expanded", String(willOpen));
           detail.hidden = !willOpen;
           openButton = willOpen ? button : null;
+          layoutCountyCards();
         });
 
         item.append(button, detail);
       });
 
-      orderToggle.addEventListener("click", () => {
-        alphabetical = !alphabetical;
-        const orderedItems = alphabetical
-          ? [...chronologicalItems].sort((a, b) =>
-              a.dataset.countyName.localeCompare(b.dataset.countyName))
-          : chronologicalItems;
+      const directionLabels = {
+        creation: { asc: "Oldest first", desc: "Newest first" },
+        name: { asc: "A–Z", desc: "Z–A" },
+        area: { asc: "Smallest first", desc: "Largest first" },
+        population: { asc: "Smallest first", desc: "Largest first" },
+      };
+
+      function updateDirectionLabels(resetToAscending = false) {
+        const selectedDirection = resetToAscending ? "asc" : sortDirection.value;
+        const labels = directionLabels[sortBy.value];
+        sortDirection.replaceChildren(
+          ...Object.entries(labels).map(([value, label]) => {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = label;
+            return option;
+          })
+        );
+        sortDirection.value = selectedDirection;
+      }
+
+      function sortCountyCards() {
+        const category = sortBy.value;
+        const direction = sortDirection.value === "desc" ? -1 : 1;
+        const orderedItems = [...chronologicalItems].sort((a, b) => {
+          let comparison = 0;
+          if (category === "name") {
+            comparison = a.dataset.countyName.localeCompare(b.dataset.countyName);
+          } else if (category === "creation") {
+            comparison = a.dataset.creationDate.localeCompare(b.dataset.creationDate);
+          } else {
+            comparison = Number(a.dataset[category]) - Number(b.dataset[category]);
+          }
+          return comparison * direction;
+        });
         orderedItems.forEach((item) => historyList.append(item));
-        orderToggle.textContent = alphabetical
-          ? "View counties by creation date"
-          : "View counties alphabetically";
+        layoutCountyCards();
+      }
+
+      sortBy.addEventListener("change", () => {
+        updateDirectionLabels(true);
+        sortCountyCards();
       });
+      sortDirection.addEventListener("change", sortCountyCards);
+      window.addEventListener("resize", layoutCountyCards);
+      layoutCountyCards();
     }
 
     function renderAllList() {
