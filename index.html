@@ -968,7 +968,7 @@
       <section class="map-shell" aria-label="Utah county map">
         <div class="map-display map-display-top" aria-live="polite">
           <div class="map-instructions">
-            <span>Tap once for county, tap again to add the county seat — each flip reveals another Utah landscape</span>
+            <span>Tap once for county, tap again to add the county seat</span>
           </div>
         </div>
         <svg class="map-frame" id="utahMap" viewBox="0 20 760 880" role="img" aria-label="Blank clickable map of Utah counties"></svg>
@@ -1357,14 +1357,14 @@
         pattern.setAttribute("id", id);
         pattern.setAttribute("patternUnits", "userSpaceOnUse");
         pattern.setAttribute("x", "0");
-        pattern.setAttribute("y", "20");
+        pattern.setAttribute("y", "0");
         pattern.setAttribute("width", "760");
-        pattern.setAttribute("height", "880");
+        pattern.setAttribute("height", "920");
         image.setAttribute("href", imageHref);
         image.setAttribute("x", "0");
-        image.setAttribute("y", "20");
+        image.setAttribute("y", "0");
         image.setAttribute("width", "760");
-        image.setAttribute("height", "880");
+        image.setAttribute("height", "920");
         image.setAttribute("preserveAspectRatio", "xMidYMid slice");
         pattern.append(image);
         return pattern;
