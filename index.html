@@ -4,6 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Utah Counties Practice Map</title>
+  <meta name="description" content="Explore all 29 Utah counties and their county seats with an interactive learning map.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Utah Counties">
+  <meta property="og:description" content="Explore all 29 Utah counties and their county seats.">
+  <meta property="og:image" content="utah-counties-social-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Utah Counties interactive learning map">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Utah Counties">
+  <meta name="twitter:description" content="Explore all 29 Utah counties and their county seats.">
+  <meta name="twitter:image" content="utah-counties-social-card.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
   <link rel="icon" type="image/png" sizes="512x512" href="utah-county-quiz-icon.png">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -996,16 +1008,6 @@
             <span class="mode-label">Displaying:</span>
             <span class="mode-pill" id="modeValue">Nothing selected</span>
           </div>
-          <div class="color-legend" aria-label="Map color legend">
-            <span class="legend-item">
-              <span class="legend-swatch county-color" aria-hidden="true"></span>
-              County
-            </span>
-            <span class="legend-item">
-              <span class="legend-swatch seat-color" aria-hidden="true"></span>
-              County + seat
-            </span>
-          </div>
         </div>
       </section>
 
@@ -1370,8 +1372,9 @@
       const fragment = document.createDocumentFragment();
       const defs = createSvgElement("defs");
 
-      function createLandscapePattern(id, imageHref) {
+      function createLandscapePattern(id, imageHref, imageOpacity) {
         const pattern = createSvgElement("pattern");
+        const backdrop = createSvgElement("rect");
         const image = createSvgElement("image");
         pattern.setAttribute("id", id);
         pattern.setAttribute("patternUnits", "userSpaceOnUse");
@@ -1379,19 +1382,25 @@
         pattern.setAttribute("y", "0");
         pattern.setAttribute("width", "760");
         pattern.setAttribute("height", "920");
+        backdrop.setAttribute("x", "0");
+        backdrop.setAttribute("y", "0");
+        backdrop.setAttribute("width", "760");
+        backdrop.setAttribute("height", "920");
+        backdrop.setAttribute("fill", "#f7f3e8");
         image.setAttribute("href", imageHref);
         image.setAttribute("x", "0");
         image.setAttribute("y", "0");
         image.setAttribute("width", "760");
         image.setAttribute("height", "920");
+        image.setAttribute("opacity", imageOpacity);
         image.setAttribute("preserveAspectRatio", "xMidYMid slice");
-        pattern.append(image);
+        pattern.append(backdrop, image);
         return pattern;
       }
 
       defs.append(
-        createLandscapePattern("utahLandscapeMorning", "utah-landscape-morning.png"),
-        createLandscapePattern("utahLandscapeGolden", "utah-landscape-golden.png"),
+        createLandscapePattern("utahLandscapeMorning", "utah-landscape-morning.png", "0.28"),
+        createLandscapePattern("utahLandscapeGolden", "utah-landscape-golden.png", "0.34"),
       );
       fragment.append(defs);
 
